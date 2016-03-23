@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WebGL 2 Fluid Simulation</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+
+    <script src="js/utility.js"></script>
+    <script src="js/thirdparty/gl-matrix-min.js"></script>
+    <script src="js/shader.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/fluid_system/box.js"></script>
+    <script src="js/fluid_system/grid.js"></script>
+    <script src="js/fluid_system/particle.js"></script>
+
+
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+
+
+<body>
+
+    <div id="webgl_display">
+        <script id="fs" type="x-shader/x-fragment">
+        precision highp float;
+        precision highp int;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        }
+        </script>
+
+        <script id="fs_white" type="x-shader/x-fragment">
+        precision highp float;
+        precision highp int;
+
+        void main()
+        {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        }
+        </script>
+
+        <script id="fs_red" type="x-shader/x-fragment">
+        precision highp float;
+        precision highp int;
+
+        void main()
+        {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+        </script>
+
+
+        <script id="vs" type="x-shader/x-vertex" >
+        precision highp float;
+        precision highp int;
+
+        uniform mat4 u_model;
+        uniform mat4 u_viewProj;
+
+        attribute vec3 a_position;
+
+        void main()
+        {
+            gl_PointSize= 2.0;
+            vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
+            gl_Position = position;
+        }
+        </script>
+
+        <script id="vs_point_highlight" type="x-shader/x-vertex" >
+        precision highp float;
+        precision highp int;
+
+        uniform mat4 u_model;
+        uniform mat4 u_viewProj;
+
+        attribute vec3 a_position;
+
+        void main()
+        {
+            gl_PointSize= 3.0;
+            vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
+            gl_Position = position;
+        }
+        </script>
+
+        <script src="js/render.js"></script>
+    </div>
+    <div class="user_control">
+        <div id="stop_btn" class="btn_s1 btn_container">Pause/Restart</div>
+
+
+        <div id="unit_test_btn" class="btn_s1 btn_container">Unit Test for:</div>
+        <div>input a numerical index of particle (0-1999):</div>
+        <br>
+        <input type="text" id="p_check"/>
+        <br>
+        <br>
+        <textarea id="ut_display"></textarea>
+    </div>
+
+
+</body>
+
+</html>
