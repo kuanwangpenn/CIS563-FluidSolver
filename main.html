@@ -56,6 +56,16 @@
         }
         </script>
 
+        <script id="fs_green" type="x-shader/x-fragment">
+        precision highp float;
+        precision highp int;
+
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+        }
+        </script>
+
 
         <script id="vs" type="x-shader/x-vertex" >
         precision highp float;
@@ -68,7 +78,7 @@
 
         void main()
         {
-            gl_PointSize= 2.0;
+            gl_PointSize= 5.0;
             vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
             gl_Position = position;
         }
@@ -85,7 +95,7 @@
 
         void main()
         {
-            gl_PointSize= 3.0;
+            gl_PointSize= 5.0;
             vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
             gl_Position = position;
         }
@@ -98,12 +108,26 @@
 
 
         <div id="unit_test_btn" class="btn_s1 btn_container">Unit Test for:</div>
-        <div>input a numerical index of particle (0-1999):</div>
+        <div>input a numerical index of particle (0-999):</div>
         <br>
         <input type="text" id="p_check"/>
         <br>
         <br>
         <textarea id="ut_display"></textarea>
+        <br>
+        <br>
+
+
+        <span>Avg. FPS:</span>
+        <br>
+
+        <div id="fps_display"></div>
+        <br>
+        <form name="myform">
+          <input type="radio" name="sr" class="strategy" value="0" checked> No Strategy<br>
+          <input type="radio" name="sr" class="strategy" value="1"> Z Curve Ordering<br>
+          <input type="radio" name="sr" class="strategy" value="2"> Z ordering w/ Insertion Sort
+        </form>
     </div>
 
 

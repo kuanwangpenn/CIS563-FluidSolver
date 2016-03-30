@@ -14,7 +14,13 @@ var particleShading = new ShaderProgram(gl, 'vs', 'fs',1);
 var gridShading = new ShaderProgram(gl, 'vs', 'fs_white',0);
 
 var redShading_p = new ShaderProgram(gl, 'vs', 'fs_red',1);
+
+var greenShading_p = new ShaderProgram(gl, 'vs', 'fs_green',1);
 var redShading_b = new ShaderProgram(gl, 'vs', 'fs_red',0);
+
+
+
+
 // -- Init objects
 var box = new Box(gl);
 box.create(gl);
@@ -24,7 +30,9 @@ var grids= new Grids();
 grids.init(gl);
 
 var fluid = new Fluid();
-fluid.init(gl,box.faces,grids.grids_xyz);
+fluid.init(gl,box.faces,grids.grids_entity);
+
+var ns_flag=2;
 
 //alert(fluid.particle_box.length);
 // var grid = new Grid(gl,0,0,0,0);
@@ -66,6 +74,12 @@ var unit_test_flag = 0;
 var unit_test_at = 1;
 var textfill_flag=0;
 
+
+var stat_fps=0;
+var now = new Date().getTime();
+var prev = now;
+var tcount=1;
+
 function render() {
     // -- Render
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -97,8 +111,11 @@ function render() {
                 fluid.solver(i,gl,time_count,stop_flag);
             }
 
+            
+
             for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
-                redShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
+                //redShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
+                greenShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
             }
             redShading_b.draw(gl, grids.grids_entity[fluid.particles[unit_test_at].belong_to_box],  drawmat);
 
@@ -133,11 +150,29 @@ function render() {
     if(stop_flag==0){
         if(unit_test_flag==0){
             for(var i=0;i<grids.grids_size;i++){
-                gridShading.draw(gl, grids.grids_entity[i],  drawmat);
+                if(isRealValue(grids.grids_entity[i])){
+                    gridShading.draw(gl, grids.grids_entity[i],  drawmat);
+                }
             }
         }
     }
 
+
+    //stat analysis
+    stat_fps+=1;
+    now = new Date().getTime();
+    if(now-prev>=1000){
+        //console.log(stat_fps/(tcount));
+        document.getElementById('fps_display').innerHTML = stat_fps/(tcount);
+        //stat_fps=0;
+        tcount+=1;
+        prev=now;
+    }
+
+    //sort once every 6 seconds
+    if((tcount%6==0)&&(tcount!=0)){
+        fluid.particles_update(ns_flag);
+    }
 
     requestAnimationFrame(render);
 }
@@ -218,6 +253,10 @@ document.onclick = function(e) {
         }
     }
 
+    if(hasClass(e.target,"strategy")){
+        ns_flag= e.target.value;
+    }
+
     if(e.target.id=="p_check"){
         e.target.focus();
     }
@@ -229,6 +268,10 @@ function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
+function isRealValue(obj){
+ return obj && obj !== "null" && obj!== "undefined";
+}
 
-
-
+function hasClass(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+}

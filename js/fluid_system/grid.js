@@ -121,42 +121,44 @@ var Grid = function(gl,scale,offset_x,offset_y,offset_z) {
 var Grids = function() {
 
     this.grids_entity = [];
-    this.grids_xyz= []
+    this.grids_xyz= [];
+    this.grids_entity_z=[];
+    this.grids_xyz_z= [];
+    this.z_key=[];
 
     this.grids_size= 0;
     this.num_perloop= 3;
-    this.gscale= 2;
+    this.gscale= 4;
     this.grid_edge_length= 2*1/this.gscale;
 
 
-    var offset_tranX= -1.5;
-    var offset_tranY= -0.5;
-    var offset_tranZ= -0.5;
+    var offset_tranX= -2.75;
+    var offset_tranY= -1.75;
+    var offset_tranZ= -1.75;
     var offset_scal= 8;
+
+    var iLength= 12;
+    var jLength= 14;
+
     this.init = function(gl) {
 
-        for (var i = 0; i < 4; i++) {
-             for (var j = 0; j < 2; j++) {
-                for (var k = 0; k < 2; k++) {
+        for (var i = 0; i < iLength; i++) {
+             for (var j = 0; j < jLength; j++) {
+                for (var k = 0; k < 8; k++) {
                     var grid = new Grid(gl,this.gscale,offset_tranX+i*this.grid_edge_length,offset_tranY+j*this.grid_edge_length,offset_tranZ+k*this.grid_edge_length);
                     grid.create(gl);
-                    this.grids_entity.push(grid);
-                    this.grids_xyz.push(grid.corner);
+                    this.grids_entity[i+j*iLength+k*iLength*jLength]= grid;
+                    this.grids_xyz[i+j*iLength+k*iLength*jLength]= grid.corner;
+
                 }
              }
          }
-
-         for (var i = 0; i < 4; i++) {
-             for (var j = 0; j < 2; j++) {
-                for (var k = 0; k < 2; k++) {
-                    var grid = new Grid(gl,this.gscale,offset_tranX+i*this.grid_edge_length,-offset_tranX+j*this.grid_edge_length,offset_tranZ+k*this.grid_edge_length);
-                    grid.create(gl);
-                    this.grids_entity.push(grid);
-                    this.grids_xyz.push(grid.corner);
-                }
-             }
-         }
-
+        
          this.grids_size= this.grids_entity.length;
+         //alert(this.grids_size);
     }
+
+
+
+
 }
