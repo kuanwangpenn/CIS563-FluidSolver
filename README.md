@@ -42,4 +42,5 @@ line 195 solver method at particles.js
 
 
 
+5. parameters are fine tuned
 

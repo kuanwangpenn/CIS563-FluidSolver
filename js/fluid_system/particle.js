@@ -199,19 +199,20 @@ var Fluid = function() {
 
             var dt= this.time_scale*stop_flag;
 
-            if(this.detect_collision(index)!=-1){
+            if(this.detect_collision(index).length>0){
             var cindex= this.detect_collision(index);
             var a=1;
             var b=1;
             var c=1;
-            if((cindex==0)||(cindex==1)){c=-2*c;}
-            if((cindex==2)){b=-1*b;}
-            if((cindex==3)||(cindex==4)){a=-2*a;}
-
+            for(var i=0;i<cindex.length;i++){
+                if((cindex[i]==0)||(cindex[i]==1)){c=-12;}
+                if((cindex[i]==2)){b=-12;a= (300.0);c= (100.0);}
+                if((cindex[i]==3)||(cindex[i]==4)){a=-12;}
+            }
             
-            this.particles[index].velocity[0]= a*this.particles[index].velocity[0]/1.8+  (this.GRAVITY[0]*this.force_scale*this.force_scale*this.particles[index].density+this.particles[index].f[0]*this.force_scale)/this.particles[index].density*dt;
-            this.particles[index].velocity[1]= b*this.particles[index].velocity[1]/1.8+ (this.GRAVITY[1]*this.force_scale*this.force_scale*this.particles[index].density+this.particles[index].f[1]*this.force_scale)/this.particles[index].density*dt;
-            this.particles[index].velocity[2]= c*this.particles[index].velocity[2]/1.8+  (this.GRAVITY[2]*this.force_scale*this.force_scale*this.particles[index].density+this.particles[index].f[2]*this.force_scale)/this.particles[index].density*dt;
+            this.particles[index].velocity[0]= a*(this.GRAVITY[0]*this.force_scale*this.particles[index].density+this.particles[index].f[0]*this.force_scale)/this.particles[index].density*dt;
+            this.particles[index].velocity[1]= b*(this.GRAVITY[1]*this.force_scale*this.particles[index].density+this.particles[index].f[1]*this.force_scale)/this.particles[index].density*dt;
+            this.particles[index].velocity[2]= c*(this.GRAVITY[2]*this.force_scale*this.particles[index].density+this.particles[index].f[2]*this.force_scale)/this.particles[index].density*dt;
 
             }else{
 
@@ -272,6 +273,7 @@ var Fluid = function() {
 
     this.detect_collision = function(index, v){
         var cp= this.particles[index].positions;
+        var hit= [];
         for(var i=0;i<this.colliders.length;i++){
             if(
             ((cp[0]>this.colliders[i][0][0])&&(cp[0]<this.colliders[i][1][0]))&&
@@ -279,10 +281,10 @@ var Fluid = function() {
             ((cp[2]>this.colliders[i][0][2])&&(cp[2]<this.colliders[i][1][2]))
             )
             {
-                return i;
+                hit.push(i);
             }
         }
-        return -1;
+        return hit;
     }
 
     this.particle_to_grid = function(index,flag){
