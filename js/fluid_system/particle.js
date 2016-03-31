@@ -206,7 +206,7 @@ var Fluid = function() {
             var c=1;
             for(var i=0;i<cindex.length;i++){
                 if((cindex[i]==0)||(cindex[i]==1)){c=-12;}
-                if((cindex[i]==2)){b=-12;a= (300.0);c= (100.0);}
+                if((cindex[i]==2)){b=-12;a= (300.0);}
                 if((cindex[i]==3)||(cindex[i]==4)){a=-12;}
             }
             
