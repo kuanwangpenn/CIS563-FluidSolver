@@ -44,3 +44,5 @@ line 195 solver method at particles.js
 
 5. parameters are fine tuned
 
+continue tunning parameters, get rid off two self made parameters which adjust speed in solver; 
+

@@ -3,7 +3,7 @@ var Particle = function(gl,xt,yt,zt) {
     // -- Local space position
     this.belong_to_box = -1;
     this.density= 1.0;
-    this.pressure =0.0;
+    this.pressure =1.0;
     this.f = [0.0,0.0,0.0];
     this.mass= 1.0;
     this.z_index=0;
@@ -93,7 +93,7 @@ var Fluid = function() {
      this.numParticles_perLoop = 10;
 
      var offset_tranX= -5;
-     var offset_tranY= 15;
+     var offset_tranY= -5;
      var offset_tranZ= -4.5;
      var offset_scal= 8;
 
@@ -152,13 +152,13 @@ var Fluid = function() {
     }
 
     this.sph_summation =function(index, dt){
-        var stiffness= 1.4;
+        var stiffness= 6.2;
         var static_water_ru= 1.0;
         var min_thres= 20;
 
         if((this.my_neighbor[index].length>0)&&(this.particles[index].belong_to_box>-1)){
-            var t_density= 0.0;
-            var t_pressure= 0.0;
+            var t_density= 1.0;
+            var t_pressure= 1.0;
             var t_fpressure= [0.0,0.0,0.0];
 
             //alert(this.my_neighbor[index].length);
@@ -168,8 +168,8 @@ var Fluid = function() {
                 if(this.my_neighbor[index].length<=min_thres){t_density= static_water_ru;}
 
                 t_pressure= stiffness*(t_density-static_water_ru);
-                if(t_pressure<0){t_pressure=0;}
-                if(this.my_neighbor[index].length<=min_thres){t_pressure= 0;}
+                //if(t_pressure<1){t_pressure=1;}
+                if(this.my_neighbor[index].length<=min_thres){t_pressure= 1;}
 
                 var spikyg= this.kernel_spiky(this.particles[index],this.particles[this.my_neighbor[index][i]]);
                 //console.log(spikyg[0]);
@@ -206,7 +206,7 @@ var Fluid = function() {
             var c=1;
             for(var i=0;i<cindex.length;i++){
                 if((cindex[i]==0)||(cindex[i]==1)){c=-12;}
-                if((cindex[i]==2)){b=-12;a= (300.0);}
+                if((cindex[i]==2)){b=-12;}
                 if((cindex[i]==3)||(cindex[i]==4)){a=-12;}
             }
             
