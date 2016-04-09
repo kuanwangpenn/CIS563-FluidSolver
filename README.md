@@ -1,48 +1,35 @@
 
 
-1.Sprint 1 Backlog + Collision Handling + Working Sprint 2 simulation:
-
-Backlog: standard grid based neighbor search completed
-line 143, init method in grids.js for grid encoding
-line 288, particle_to_grid method in particles.js for grid decoding and neighbor updating
-
-Collision Handling:
-line 195, solver method in particles.js
-line 244, make_boundingbox in particles.js
-and line 273, detect_collision method in particles.js
+1.backlog: fixed some parameter proportion; fixed grid size
 
 
+2.pcisph, check line 268 in particles.js, pci_converge method; explanation of the procedure is noted in comments there.
 
-2.Neighbor Search : Z-Index Sorting
+now for converging step, because of speed issue, I only try to converge three times, if the density cannot be converged to desired diff, then I give up
 
-Z-Index Sorting:
-line 372, zsort method in particles.js; 
-method follows https://en.wikipedia.org/wiki/Z-order_curve
-
-I hear many different opinions on z index sorting, I think apply zsort on particles make more sense (if zsort is for uniform grids, insertion sort later will be totally a waste since grids are static).
-
-z-index sort is called by line 441 particles_update method in particles.js; 
-
-sorting methods (insertion or bubble) is at line 404
+the issue brought by less accurate converge is for high pressure case, the force can not be estimated well; for example, when water impact the wall, for better simulate this situation, when the water hit the boundary, I scale the force up at the tangent direction of the impacting point.
 
 
-comparison please see attachment
+3.parallel
+
+I spent 4 days and tried two plugins:
+https://adambom.github.io/parallel.js/
+and
+http://www.hamsters.io/
+
+pathetic
+
+js parallel has special requirements for the data structure; the pseudo object oriented programming trick in js can not be paralleled; only array can be treated as parallelizable structure
+
+that's fine, I rewrite my sprint2 and rearranged my data sctructure into a bunch of arrays; then parallel packages work, but they work poorly; performance was not improved, in fact, sometimes for no reason, the speed drops to 0 fps gradually, very unstable.
+
+so I give up parallelism.
 
 
+right now, my program run in single thread, with average 16 fps (with no density color indicator), or with 13 fps (with density color indicator) on my machine (the cheapest mac, the g card is basically a piece of garbage). which is, in my opinion, pretty fast.
 
-3.Particle Density & Pressure
-
-please see line 154 sph_summation method at particles.js
-
-
-4.Resolve Forces on Particle (Gravity & Pressure)
-
-please see line 154 sph_summation method at particles.js and
-line 195 solver method at particles.js 
+Overall it is very challenging, I have tried every trick I can come up with to balance the speed and accuracy in previous month for this project. the outcome is ok. hope this can be a useful reference for future student.
 
 
 
-5. parameters are fine tuned
-
-continue tunning parameters, get rid off two self made parameters which adjust speed in solver; 
 

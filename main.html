@@ -84,6 +84,40 @@
         }
         </script>
 
+
+
+        <script id="vs_vary" type="x-shader/x-vertex" >
+        precision highp float;
+        precision highp int;
+
+        uniform mat4 u_model;
+        uniform mat4 u_viewProj;
+
+        attribute vec3 a_position;
+        attribute vec4 a_color;
+
+        varying lowp vec4 vColor;
+
+        void main()
+        {
+            gl_PointSize= 5.0;
+            vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
+            gl_Position = position;
+
+            vColor = a_color;
+        }
+        </script>
+
+        <script id="fs_vary" type="x-shader/x-fragment">
+            varying lowp vec4 vColor;
+            
+          void main(void) {
+            gl_FragColor = vColor;
+          }
+        </script>
+
+
+
         <script id="vs_point_highlight" type="x-shader/x-vertex" >
         precision highp float;
         precision highp int;
@@ -123,11 +157,11 @@
 
         <div id="fps_display"></div>
         <br>
-        <form name="myform">
+<!--         <form name="myform">
           <input type="radio" name="sr" class="strategy" value="0" checked> No Strategy<br>
           <input type="radio" name="sr" class="strategy" value="1"> Z Curve Ordering<br>
           <input type="radio" name="sr" class="strategy" value="2"> Z ordering w/ Insertion Sort
-        </form>
+        </form> -->
     </div>
 
 

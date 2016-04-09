@@ -13,6 +13,9 @@ var boxShading = new ShaderProgram(gl, 'vs', 'fs',0);
 var particleShading = new ShaderProgram(gl, 'vs', 'fs',1);
 var gridShading = new ShaderProgram(gl, 'vs', 'fs_white',0);
 
+var densityShading = new ShaderProgram(gl, 'vs_vary', 'fs_vary',1);
+
+
 var redShading_p = new ShaderProgram(gl, 'vs', 'fs_red',1);
 
 var greenShading_p = new ShaderProgram(gl, 'vs', 'fs_green',1);
@@ -50,6 +53,8 @@ var camera = new Camera();
 // -- UI control
 var drag_flag= -1;
 var cam_transform= mat4.create();
+
+
 var rotX= 0.0;
 var rotY= 0.0;
 var calibX= 0.0;
@@ -125,8 +130,8 @@ function render() {
                 for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
                     if(fluid.my_neighbor[unit_test_at][i] != unit_test_at){
                         document.getElementById("ut_display").value+="ID:"+ fluid.my_neighbor[unit_test_at][i] + "\n";
-                        document.getElementById("ut_display").value+="kernel poly6:"+ fluid.kernel_poly6(fluid.particles[unit_test_at], fluid.particles[fluid.my_neighbor[unit_test_at][i]]) + "\n";
-                        document.getElementById("ut_display").value+="kernel spiky:"+ fluid.kernel_spiky(fluid.particles[unit_test_at], fluid.particles[fluid.my_neighbor[unit_test_at][i]]) + "\n";
+                        document.getElementById("ut_display").value+="density:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].density + "\n";
+                        document.getElementById("ut_display").value+="pressure:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].pressure/100 + "\n";
                         document.getElementById("ut_display").value+=" \n"
                     }
                 }
@@ -137,7 +142,9 @@ function render() {
     }else{
         for(var i=0;i<fluid.emit_size;i++){
             fluid.solver(i,gl,time_count,stop_flag);
-            particleShading.draw(gl, fluid.particles[i],  drawmat);
+
+            densityShading.draw(gl, fluid.particles[i],  drawmat);
+            
         }
     }
 
@@ -170,9 +177,9 @@ function render() {
     }
 
     //sort once every 6 seconds
-    if((tcount%6==0)&&(tcount!=0)){
-        fluid.particles_update(ns_flag);
-    }
+    // if((tcount%6==0)&&(tcount!=0)){
+    //     fluid.particles_update(ns_flag);
+    // }
 
     requestAnimationFrame(render);
 }
