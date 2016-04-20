@@ -1,3 +1,18 @@
 http://www.intpowertechcorp.com/GDC03.pdf
 
-for final, I might want to implement something related to above link. that is the fast fluid sim using the diffusing steps(hacks) introduced in that paper
+sprint1:
+
+things implemented:
+
+grid init (line 114 @ particle.js)
+particle init (line 114 @ particle.js)
+density diffuse step (line 140 @ particle.js)
+
+things need to be implemented:
+
+advect step
+add force step
+
+
+
+currently thet cannot move yet
