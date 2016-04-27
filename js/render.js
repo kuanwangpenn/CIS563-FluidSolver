@@ -17,23 +17,24 @@ var densityShading = new ShaderProgram(gl, 'vs_vary', 'fs_vary',1);
 
 
 var redShading_p = new ShaderProgram(gl, 'vs', 'fs_red',1);
+var iceShading_p = new ShaderProgram(gl, 'vs_huge', 'fs_blue',1);
 
 var greenShading_p = new ShaderProgram(gl, 'vs', 'fs_green',1);
 var redShading_b = new ShaderProgram(gl, 'vs', 'fs_red',0);
 
-
+var rgbd_solve=0;
 
 
 // -- Init objects
-// var box = new Box(gl);
-// box.create(gl);
+var box = new Box(gl);
+box.create(gl);
 
 
-// var grids= new Grids();
-// grids.init(gl);
+var grids= new Grids();
+grids.init(gl);
 
 var fluid = new Fluid();
-fluid.init(gl);
+fluid.init(gl,box.faces,grids.grids_entity);
 
 var ns_flag=2;
 
@@ -97,54 +98,63 @@ function render() {
     var drawmat= mat4.create();
     drawmat= mat4.rotateX(cam_transform, mat4.rotateY(cam_transform, camera.viewProj, rotX), rotY);
     
+    boxShading.draw(gl, box,  drawmat);
 
     //gridShading.draw(gl, grids.grids_entity[1],  drawmat);
     //alert(fluid.emit_size);
     
-
     
 
     
     
     if(unit_test_flag==1){
         
-        // if((fluid.my_neighbor[unit_test_at].length>0)&&(fluid.particles[unit_test_at].belong_to_box>-1))
-        // {
-        //     //redShading_b.draw(gl, grids.grids_entity[5],  drawmat);
-        //     // for(var i=0;i<fluid.emit_size;i++){
-        //     //     fluid.solver(i,gl,time_count,stop_flag);
-        //     // }
-
+        if((fluid.my_neighbor[unit_test_at].length>0)&&(fluid.particles[unit_test_at].belong_to_box>-1))
+        {
+            //redShading_b.draw(gl, grids.grids_entity[5],  drawmat);
+            
+            for(var i=0;i<fluid.emit_size;i++){
+                fluid.solver(i,gl,time_count,stop_flag,rgbd_solve);
+            }
+            fluid.diffuse(0.01*stop_flag);
             
 
-        //     for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
-        //         //redShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
-        //         //greenShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
-        //     }
-        //     //redShading_b.draw(gl, grids.grids_entity[fluid.particles[unit_test_at].belong_to_box],  drawmat);
+            for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
+                //redShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
+                greenShading_p.draw(gl, fluid.particles[fluid.my_neighbor[unit_test_at][i]],  drawmat);
+            }
+            if(rgbd_solve!=0){
+                iceShading_p.draw(gl, fluid.rgbd,  drawmat);
+            }
+            redShading_b.draw(gl, grids.grids_entity[fluid.particles[unit_test_at].belong_to_box],  drawmat);
 
 
-        //     // if(textfill_flag==0){
-        //     //     document.getElementById("ut_display").value+= "Total #Neighbor: " + (fluid.my_neighbor[unit_test_at].length-1) +" \n"
-        //     //     for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
-        //     //         if(fluid.my_neighbor[unit_test_at][i] != unit_test_at){
-        //     //             document.getElementById("ut_display").value+="ID:"+ fluid.my_neighbor[unit_test_at][i] + "\n";
-        //     //             document.getElementById("ut_display").value+="density:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].density + "\n";
-        //     //             document.getElementById("ut_display").value+="pressure:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].pressure/100 + "\n";
-        //     //             document.getElementById("ut_display").value+=" \n"
-        //     //         }
-        //     //     }
-        //     //     textfill_flag=1;
-        //     // }
+            if(textfill_flag==0){
+                document.getElementById("ut_display").value+= "Total #Neighbor: " + (fluid.my_neighbor[unit_test_at].length-1) +" \n"
+                for(var i=0;i<fluid.my_neighbor[unit_test_at].length;i++){
+                    if(fluid.my_neighbor[unit_test_at][i] != unit_test_at){
+                        document.getElementById("ut_display").value+="ID:"+ fluid.my_neighbor[unit_test_at][i] + "\n";
+                        document.getElementById("ut_display").value+="density:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].density + "\n";
+                        document.getElementById("ut_display").value+="pressure:"+ fluid.particles[fluid.my_neighbor[unit_test_at][i]].pressure/100 + "\n";
+                        document.getElementById("ut_display").value+=" \n"
+                    }
+                }
+                textfill_flag=1;
+            }
 
-        // }
+        }
     }else{
-        for(var i=0;i<fluid.emit_size;i++){
-        //     //fluid.solver(i,gl,time_count,stop_flag);
 
-             greenShading_p.draw(gl, fluid.particles[i],  drawmat);
+        for(var i=0;i<fluid.emit_size;i++){
+            fluid.solver(i,gl,time_count,stop_flag,rgbd_solve);
+
+            densityShading.draw(gl, fluid.particles[i],  drawmat);
             
         }
+        if(rgbd_solve!=0){
+            iceShading_p.draw(gl, fluid.rgbd,  drawmat);
+        }
+        fluid.diffuse(0.01*stop_flag);
     }
 
 
@@ -154,7 +164,13 @@ function render() {
     }
 
     if(stop_flag==0){
-        
+        if(unit_test_flag==0){
+            for(var i=0;i<grids.grids_size;i++){
+                if(isRealValue(grids.grids_entity[i])){
+                    gridShading.draw(gl, grids.grids_entity[i],  drawmat);
+                }
+            }
+        }
     }
 
 
@@ -256,7 +272,9 @@ document.onclick = function(e) {
     if(hasClass(e.target,"strategy")){
         ns_flag= e.target.value;
     }
-
+    if(e.target.id=="rg_btn"){
+        rgbd_solve=1;
+    }
     if(e.target.id=="p_check"){
         e.target.focus();
     }

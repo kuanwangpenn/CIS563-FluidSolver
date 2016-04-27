@@ -84,7 +84,32 @@
         }
         </script>
 
+         <script id="fs_blue" type="x-shader/x-fragment">
+        precision highp float;
+        precision highp int;
 
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+        }
+        </script>
+
+        <script id="vs_huge" type="x-shader/x-vertex" >
+        precision highp float;
+        precision highp int;
+
+        uniform mat4 u_model;
+        uniform mat4 u_viewProj;
+
+        attribute vec3 a_position;
+
+        void main()
+        {
+            gl_PointSize= 25.0;
+            vec4 position = u_viewProj * u_model * vec4(a_position, 1.0);
+            gl_Position = position;
+        }
+        </script>
 
         <script id="vs_vary" type="x-shader/x-vertex" >
         precision highp float;
@@ -140,8 +165,8 @@
     <div class="user_control">
         <div id="stop_btn" class="btn_s1 btn_container">Pause/Restart</div>
 
-
-        <!-- <div id="unit_test_btn" class="btn_s1 btn_container">Unit Test for:</div>
+        <div id="rg_btn" class="btn_s1 btn_container">+ Rigid Body</div>
+        <div id="unit_test_btn" class="btn_s1 btn_container">Unit Test for:</div>
         <div>input a numerical index of particle (0-999):</div>
         <br>
         <input type="text" id="p_check"/>
@@ -149,7 +174,7 @@
         <br>
         <textarea id="ut_display"></textarea>
         <br>
-        <br> -->
+        <br>
 
 
         <span>Avg. FPS:</span>

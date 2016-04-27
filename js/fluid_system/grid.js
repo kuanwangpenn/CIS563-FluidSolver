@@ -128,25 +128,29 @@ var Grids = function() {
 
     this.grids_size= 0;
     this.num_perloop= 3;
-    this.gscale= 20;
+    this.gscale= 10;
     this.grid_edge_length= 2*1/this.gscale;
 
 
-    var offset_tranX= -4.3;
-    var offset_tranY= -4.25;
-    var offset_tranZ= -4.25;
+    var offset_tranX= -1.3;
+    var offset_tranY= -1.25;
+    var offset_tranZ= -1.25;
     var offset_scal= 8;
 
-    var iLength= 90;
-    var jLength= 90;
+    var iLength= 14;
+    var jLength= 14;
+
     this.init = function(gl) {
 
         for (var i = 0; i < iLength; i++) {
              for (var j = 0; j < jLength; j++) {
-                    var grid = new Grid(gl,this.gscale,offset_tranX+i*this.grid_edge_length,offset_tranY+j*this.grid_edge_length, 0);
+                for (var k = 0; k < 14; k++) {
+                    var grid = new Grid(gl,this.gscale,offset_tranX+i*this.grid_edge_length,offset_tranY+j*this.grid_edge_length,offset_tranZ+k*this.grid_edge_length);
                     grid.create(gl);
-                    this.grids_entity[i+j*iLength]= grid;
-                    this.grids_xyz[i+j*iLength]= grid.corner;
+                    this.grids_entity[i+j*iLength+k*iLength*jLength]= grid;
+                    this.grids_xyz[i+j*iLength+k*iLength*jLength]= grid.corner;
+
+                }
              }
          }
         
